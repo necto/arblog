@@ -45,8 +45,10 @@
 
 (defmethod restas:process-route :before ((route admin-route) bindings)
   (multiple-value-bind (user password) (hunchentoot:authorization)
-    (unless (arblog.internal.datastore:ds.check-admin user password)
-      (hunchentoot:require-authorization *blog-name*))))
+    (let ((authorized (arblog.internal.datastore:ds.check-admin user password)))
+      (setf (hunchentoot:session-value :admin-session) authorized)
+      (unless authorized
+        (hunchentoot:require-authorization *blog-name*)))))
 
 (defun @admin (route)
   (make-instance 'admin-route :target route))

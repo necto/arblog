@@ -59,6 +59,13 @@
                              :year year
                              :month (format nil "~2,'0D" month))))
 
+(defun admin-session ()
+  (hunchentoot:session-value :admin-session))
+
+(defun new-entry-url ()
+  (when (admin-session)
+    (restas:genurl 'arblog::-admin-.create-post)))
+
 (defun archive-for-day-link (year month day)
   (list :title day
         :href (restas:genurl 'arblog.public::archive-for-day
@@ -85,12 +92,15 @@
                       (collect
                           (list :name tag
                                 :href (restas:genurl 'arblog.public::posts-with-tag :tag tag))))
+          :edit (when (admin-session)
+                  (restas:genurl 'arblog::-admin-.edit-post :id (gethash "_id" post)))
           :published (local-time:format-rfc1123-timestring nil published))))
 
 
 (define-isimple-method theme-list-recent-posts (posts navigation)
   (render-template show-all-blog-post
-    (list :posts (mapcar 'prepare-post-data posts)
+    (list :new-entry (new-entry-url)
+          :posts (mapcar 'prepare-post-data posts)
           :disqus (list :enabled arblog:*disqus-enabled*
                         :shortname arblog:*disqus-shortname*)
           :navigation navigation)))
@@ -117,7 +127,8 @@
 (define-isimple-method theme-one-post (post)
   (let ((id (gethash "_id" post)))
     (render-template show-one-post
-      (list* :disqus (list :shortname arblog:*disqus-shortname*
+      (list* :new-entry (new-entry-url)
+             :disqus (list :shortname arblog:*disqus-shortname*
                            :developer-mode arblog:*disqus-developer-mode*
                            :enabled arblog:*disqus-enabled*
                            :identifier id
