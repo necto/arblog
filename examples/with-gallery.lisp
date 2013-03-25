@@ -18,7 +18,8 @@
 (in-package #:myblog)
 
 (restas:mount-module -gallery- (#:gallery)
-  (:url "gal"))
+  (:url "gal")
+  (gallery.internal.render:*render* (make-instance 'gallery.default-render:handler)))
 
 (restas:mount-module -arblog- (#:arblog)
   (arblog:*blog-name* "My blog")
