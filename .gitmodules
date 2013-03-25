@@ -4,3 +4,9 @@
 [submodule "puri-unicode"]
 	path = puri-unicode
 	url = git@github.com:archimag/puri-unicode.git
+[submodule "cl-gallery"]
+	path = cl-gallery
+	url = git@github.com:necto/cl-gallery.git
+[submodule "restas"]
+	path = restas
+	url = git@github.com:necto/restas.git
