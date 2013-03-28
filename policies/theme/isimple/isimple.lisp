@@ -1,9 +1,9 @@
 ;;;; isimple.lisp
 
 (defpackage #:arblog.theme.isimple
-  (:use #:cl #:iter #:arblog.policy.theme)
-  (:export #:arblog-isimple-theme
-           #:theme-templates-package))
+  (:use #:cl #:iter #:arblog.policy.theme
+        #:gallery.policy.render #:gallery.content)
+  (:export #:arblog-isimple-theme))
 
 (in-package #:arblog.theme.isimple)
 
@@ -21,12 +21,12 @@
   (iter (for item in (arblog.internal.datastore:ds.list-recent-posts 0 10 :fields '("title")))
         (collect
             (list :title (gethash "title" item)
-                  :url (restas:genurl 'arblog.public::post-permalink :id (gethash "_id" item))))))
+                  :url (restas:genurl 'arblog::-public-.post-permalink :id (gethash "_id" item))))))
 
 (defun tags-widget ()
   (let ((tags (arblog.internal.datastore:ds.all-tags)))
     (iter (for tag in (sort (copy-list tags) #'string< :key #'string-downcase))
-          (collect (list :href (restas:genurl 'arblog.public::posts-with-tag
+          (collect (list :href (restas:genurl 'arblog::-public-.posts-with-tag
                                               :tag tag)
                          :name tag)))))
 
@@ -37,8 +37,11 @@
                     `(closure-template:ttable-call-template
                       (closure-template:package-ttable (theme-templates-package ,',theme))
                       (string ',,tmplname)
-                      (let ((is-not-admin (not (string= (string (slot-value restas:*module* 'restas::package)) "ARBLOG.ADMIN"))))
-                        (list* :index-url (restas:genurl (if is-not-admin 'arblog.public::entry 'arblog.admin::entry))
+                      (let ((is-not-admin (not (string= (string (slot-value restas:*module* 'restas::package))
+                                                        "ARBLOG.ADMIN"))))
+                        (list* :index-url (restas:genurl (if is-not-admin
+                                                             'arblog::-public-.entry
+                                                             'arblog::-admin-.entry))
                                :blog-name arblog:*blog-name*
                                :blog-author arblog:*blog-author*
                                :recent-posts (if is-not-admin (recent-posts-widget))
@@ -180,3 +183,29 @@
                                   (collect (list :name tag))))
           :preview preview)))
 
+;;;; Gallery
+
+(define-isimple-method theme.album-list (add-album-url albums)
+  (render-template gallery-albums
+    (list :albums (iter (for album in albums)
+                        (collect (draw-preview album)))
+          :new-album add-album-url)))
+
+(define-isimple-method theme.add-pic (form album)
+  (render-template gallery-add-pic
+    (list :add-pic-form form
+          :action (restas:genurl 'gallery:receive-pic)
+          :album album)))
+
+(define-isimple-method theme.add-album (form)
+  (render-template gallery-add-album
+    (list :add-pic-form form
+          :action (restas:genurl 'gallery:receive-album))))
+
+(define-isimple-method theme.view-album (add-pic-url album)
+  (render-template gallery-view-album
+    (list :album-title (item-title album)
+          :album-comment (item-comment album)
+          :add-pic-url add-pic-url
+          :pictures (iter (for pic in (album-items album))
+                          (collect (draw-preview pic))))))

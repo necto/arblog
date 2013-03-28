@@ -537,3 +537,78 @@
     {/call}
     
 {/template}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// GALLERY
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{template galleryAlbums}
+    {call arblogHtmlPage data="all"}
+        {param title: 'Gallery'/}
+        {param content}
+           <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+           </link>
+           {foreach $album in $albums}
+              {$album |noAutoescape}
+           {/foreach}
+           <a href="{$newAlbum}"> Add album </a>
+        {/param}
+    {/call}
+{/template}
+
+{template galleryAddPic}
+    {call arblogHtmlPage data="all"}
+        {param title: 'Add new picture'/}
+        {param content}
+          <script language="javascript" type="text/javascript" src="static/js/preview-updater.js">
+          </script>
+          <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+          </link>
+          {$addPicForm |noAutoescape}
+          <form method="get" action="{$action}">
+            Title: <input type="text" name="title" value=""/>
+            Comment: <input type="text" name="comment" value=""/>
+            Album: <input type="text" name="album" value="{$album}" readonly="readonly"/>
+            <input type="hidden" name="pic" value="no-value" id="pic"/>
+            <input type="submit" value="like it!"/>
+          </form>
+          <div id="preview"></div>
+        {/param}
+    {/call}
+{/template}
+
+{template galleryAddAlbum}
+    {call arblogHtmlPage data="all"}
+        {param title: 'Add new album'/}
+        {param content}
+          <script language="javascript" type="text/javascript" src="static/js/preview-updater.js">
+          </script>
+          <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+          </link>
+          {print $addPicForm |noAutoescape}
+          <form method="get" action="{$action}">
+            Title: <input type="text" name="title" value=""/>
+            Comment: <input type="text" name="comment" value=""/>
+            <input type="hidden" name="pic" value="no-value" id="pic"/>
+            <input type="submit" value="that is right!"/>
+          </form>
+          <div id="preview"> </div>
+        {/param}
+    {/call}
+{/template}
+
+{template galleryViewAlbum}
+    {call arblogHtmlPage data="all"}
+        {param title: '{$albumTitle}'/}
+        {param content}
+          <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+          </link>
+          <h1> {$albumTitle} </h1>
+          <p> {$albumComment} </p>
+          <a href="{$addPicUrl}"> new picture </a>
+          {foreach $pic in $pictures}
+             {$pic |noAutoescape}
+          {/foreach}
+        {/param}
+    {/call}
+{/template}

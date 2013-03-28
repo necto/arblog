@@ -1,7 +1,8 @@
 ;;;; mirev.lisp
 
 (defpackage #:arblog.theme.mirev
-  (:use #:cl #:iter #:arblog.policy.theme)
+  (:use #:cl #:iter #:arblog.policy.theme
+        #:gallery.policy.render #:gallery.content)
   (:export #:arblog-mirev-theme
            #:theme-templates-package))
 
@@ -153,3 +154,32 @@
                       :tags (iter (for tag in tags)
                                   (collect (list :name tag))))
           :preview preview)))
+
+;;;; Gallery
+
+(define-mirev-method theme.album-list (add-album-url albums)
+  (render-template gallery-albums
+    (list :albums (iter (for album in albums)
+                        (collect (draw-preview album)))
+          :new-album add-album-url)))
+
+(define-mirev-method theme.add-pic (form album)
+  (render-template gallery-add-pic
+    (list :add-pic-form form
+          :action (restas:genurl 'gallery:receive-pic)
+          :album album)))
+
+(define-mirev-method theme.add-album (form)
+  (render-template gallery-add-album
+    (list :add-pic-form form
+          :action (restas:genurl 'gallery:receive-album))))
+
+(define-mirev-method theme.view-album (add-pic-url album)
+  (render-template gallery-view-album
+    (list :album-title (item-title album)
+          :album-comment (item-comment album)
+          :add-pic-url add-pic-url
+          :pictures (iter (for pic in (album-items album))
+                          (collect (draw-preview pic))))))
+
+;;; TODO: Eliminate copy&paste style ^^^
