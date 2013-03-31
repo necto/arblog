@@ -8,7 +8,7 @@
 
 (in-package #:arblog.theme.mirev)
 
-(defclass arblog-mirev-theme ()
+(defclass arblog-mirev-theme (gallery.default-render::handler)
   ((templates-package :initarg :templates-package
                       :initform '#:arblog.theme.mirev.tmpl
                       :reader theme-templates-package)))
@@ -157,10 +157,11 @@
 
 ;;;; Gallery
 
-(define-mirev-method theme.album-list (add-album-url albums)
+(define-mirev-method theme.album-list (add-album-url rem-album-url albums)
   (render-template gallery-albums
     (list :albums (iter (for album in albums)
                         (collect (draw-preview album)))
+          :del-album rem-album-url
           :new-album add-album-url)))
 
 (define-mirev-method theme.add-pic (form album)
@@ -174,11 +175,12 @@
     (list :add-pic-form form
           :action (restas:genurl 'gallery:receive-album))))
 
-(define-mirev-method theme.view-album (add-pic-url album)
+(define-mirev-method theme.view-album (add-pic-url rem-pic-url album)
   (render-template gallery-view-album
     (list :album-title (item-title album)
           :album-comment (item-comment album)
           :add-pic-url add-pic-url
+          :rem-pic-url rem-pic-url
           :pictures (iter (for pic in (album-items album))
                           (collect (draw-preview pic))))))
 

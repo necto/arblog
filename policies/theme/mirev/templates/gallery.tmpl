@@ -12,6 +12,8 @@
               {$album |noAutoescape}
            {/foreach}
            <a href="{$newAlbum}"> Add album </a>
+           <br/>
+           <a href="{$delAlbum}"> Del album </a>
         {/param}
     {/call}
 {/template}
@@ -65,7 +67,8 @@
           </link>
           <h1> {$albumTitle} </h1>
           <p> {$albumComment} </p>
-          <a href="{$addPicUrl}"> new picture </a>
+          <a href="{$addPicUrl}"> new pictures </a>
+          <a href="{$remPicUrl}"> remove pictures </a>
           {foreach $pic in $pictures}
              {$pic |noAutoescape}
           {/foreach}
