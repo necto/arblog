@@ -1,0 +1,376 @@
+// -*- closure-template-html -*-
+
+{namespace arblog.theme.just-dance.tmpl}
+
+{template fullPage}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+ {\n}
+    <html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <title>{$title}</title>
+            {call links}
+            {param static: $static /}
+            {/call}
+        </head>
+        <body>
+        <div id="wrapper"><div id="bottom_frame"><div id="top_frame"><div id="top_container">
+        {call header data="all" /}
+        <div id="container" class="clearfix">
+            {call sidebar data="all" /}
+            <div id="content" class="clearfix">
+                 {$content |noAutoescape}
+            </div>
+        </div>
+        <div class="endline"></div>
+        {call footer data="all"/}
+        </div></div></div></div>
+        </body>
+    </hmtl>
+{/template}
+
+{template links}
+<link rel="stylesheet" href="{$static}/css/reset.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="{$static}/css/default.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="{$static}/style.css" type="text/css" media="screen" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="{$static}/css/ie.css" type="text/css" media="screen" />
+<![endif]-->
+{/template}
+
+{template header}
+<div id="header">
+     <div id="blog_title"> <a href="{$homeUrl}">{$blogName}</a></div>
+     <h2> {$blogDescription} </h2>
+     <div id="menu">
+          <ul>
+             <li class="menu_first"><a href="{$homeUrl}">Home</a></li>
+             <li class="menu"><a href="{$galleryUrl}">Gallery</a></li>
+             <li class="menu"><a href="{$aboutUrl}" title="contacts">About</a></li>
+          </ul>
+     </div>
+     <div id="rss"><a href="{$rssUrl}"><img src="{$static}/images/spacer.gif" alt="RSS"/> </a></div>
+     <div id="searchform">{call searchForm data="all" /}</div>
+</div>
+{/template}
+
+{template searchForm}
+<form method="get" action="{$searchUrl}">
+      <input name="s" type="text" class="searchtext" id="s" value="Search..."
+             onblur="if (this.value == '') {lb}this.value = 'Search...';{rb}"
+             onfocus="if (this.value == 'Search...') {lb}this.value = '';{rb}"/>
+      <input type="image" src="{$static}/images/spacer.gif" id="searchsubmit"
+             alt="Search" value="" />
+</form>
+{/template}
+
+{template footer}
+<div id="footer" class="clearfix">
+     <div class="credit">
+          Copyright <a href="{$homeUrl}">{$blogName}</a>
+          All rights reserved.<br/>
+          <div class="footer_c"> Theme from <a href="http://wpfreethemes.name/" title="Wordpress">Wordpress</a>, adopted by <a href="http://github.com/necto" title="Necto">Necto</a> </div>
+</div>
+{/template}
+
+{template sidebar}
+<div id="sidebar">
+     <div id="welcome"> <p> {$welcomeText} </p> </div>
+     <div id="sidebar_main" class="clearfix">
+         <ul>
+            <li>
+                <h2>Categories</h2>
+                <ul>
+                   {foreach $tag in $allTags}
+                        <li><a href="{$tag.href}"> {$tag.name} </a></li>
+                   {/foreach}
+                </ul>
+            </li>
+/*
+            <li>
+                <h2>Archives</h2>
+                <ul>
+                    {foreach $year in $years}
+                        <li><a href="{$year.url}"> {$year.name} </a></li>
+                    {/foreach}
+                </ul>
+            </li>
+*/
+            {if $recentPosts}
+            <li>
+                <h2>Recent</h2>
+                <ul>
+                    {foreach $p in $recentPosts}
+                      <li><a href="{$p.url}">{$p.title}</a></li>
+                    {/foreach}
+                </ul>
+            <li>
+            {/if}
+                <h2>Meta</h2>
+                <ul>
+                    <li><a href="{$loginUrl}">login</a></li>
+                    {if $galleryUrl}
+                      <li><a href="{$galleryUrl}">gallery</a></li>
+                    {/if}
+                </ul>
+            </li>
+         <ul>
+     </div>
+</div>
+{/template}
+
+
+{template post}
+<div class="post">
+   <h1 class="post-title"><a href="{$href}" title="{$title}"> {$title} </a></h1>
+   <div class="postmetadata">Posted in {$published}</div>
+   <div class="entry"> {$content| noAutoescape} </div>
+   <div class="endline"></div>
+   {if $edit}
+       <div class="edit_post"><a href="{$edit}"> edit </a> </div>
+   {/if}
+   <div class="bookmark">
+        <ul>
+           {foreach $tag in $tags}
+              <li><a href="{$tag.href}" title="{$tag.name}"> {$tag.name} </a></li>
+           {/foreach}
+        </ul>
+   </div>
+</div>
+{/template}
+
+{template navigation}
+<div class="wp-pagenavi">
+    <div class="alignleft"> <a href="{$prevUrl}"> prev </a> </div>
+    <div class="alignright"> <a href="{$nextUrl}"> next </a> </div>
+</div>
+{/template}
+
+{template onePost}
+{call fullPage data="all"}
+    {param title: $title/}
+    {param newEntry: $newEntry /}
+    {param content}
+       {call post data="all" /}
+       {call navigation data="all" /}
+       /* todo: smth about not-found peut etre? */
+    {/param}
+{/call}
+{/template}
+
+{template allPosts}
+{call fullPage data="all"}
+     {param title: $blogName /}
+     {param newEntry: $newEntry /}
+     {param content}
+                {if $posts}
+                    {foreach $post in $posts}
+                       {call post data="$post" /}
+                    {/foreach}
+                    {call navigation data="all" /}
+                {else}
+                    <div class="notfound">
+                         <p>Content not found!</p>
+                         <p> Please try again (ang againg and again).</p>
+                    </div>
+                {/if}
+     {/param}
+{/call}
+{/template}
+
+
+{template adminEditPostPage}
+{call fullPage data="all"}
+      {param title}
+      Edit post: {if $post} {$post.title} {/if}
+      {/param}
+      {param content}
+         <form method="post" class="edit-post">
+             <div>
+                <span>Title:</span>
+                <br/>
+                <input name="title" {if $post}value="{$post.title}"{/if} />
+             </div>
+             
+             <div>
+                <span> Text: </span>
+                <br />
+                <textarea rows="30" cols="80" name="content">
+                    {nil}{if $post}{$post.markup}{/if}{nil}
+                </textarea>
+             </div>
+
+             <div>
+                 <span>Tags:</span>
+                 <br/>
+                 <input name="tags"
+                        {if $post}
+                        value="{foreach $tag in $post.tags}
+                                        {$tag.name}
+                                        {if not isLast($tag)},{sp}{/if}
+                               {/foreach}"
+                        {/if} />
+             </div>
+          </form>
+
+          {if $preview}
+              <div class="post">
+                   <div class="content">
+                        <h2>{$post.title}</h2>
+                        {$preview | noAutoescape}
+                   </div>
+             </div>
+           {/if}
+       {/param}
+{/call}
+{/template}
+
+{template postsWithTag}
+{call fullPage data="all"}
+      {param title}
+          All posts in {$blogName} with tag: {$tag}
+      {/param}
+      {param content}
+          {foreach $post in $posts}
+              {call post data="$post" /}
+          {/foreach}
+
+          /* navigation ? */
+      {/param}
+{/call}
+{/template}
+
+
+/// archive
+
+{template archiveForYear}
+{call fullPage data="all"}
+      {param title}
+          {nil}{$blogName}: {$year}
+      {/param}
+
+      {param content}
+         <h1>Archive for {$year}</h1>
+            
+          {foreach $month in $months}
+              <div>
+                  <a href="{$month.href}">Archive for {$month.title}, {$year}</a>
+              </div>
+          {/foreach}
+      {/param}
+{/call}    
+{/template}
+
+{template archiveForMonth}
+{call fullPage data="all"}
+      {param title}
+          {nil}{$blogName}: {$month}, {$year}
+      {/param}
+
+      {param content}
+          <h1>Archive for {$month}, {$year}</h1>
+           
+          {foreach $post in $posts}
+              {call post data="$post" /}
+          {/foreach}
+      {/param}
+{/call}    
+{/template}
+
+
+{template archiveForDay}
+{call fullPage data="all"}
+      {param title}
+          {nil}{$blogName}: {$day} {$month}, {$year}
+      {/param}
+
+      {param content}
+          <h1>Archive for {$day} {$month}, {$year}</h1>
+            
+          {foreach $post in $posts}
+              {call post data="$post" /}
+          {/foreach}
+      {/param}
+{/call}    
+{/template}
+
+
+/// Gallery
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// GALLERY
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{template galleryAlbums}
+{call fullPage data="all"}
+    {param title: 'Gallery'/}
+    {param content}
+       <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+       </link>
+       {foreach $album in $albums}
+          {$album |noAutoescape}
+       {/foreach}
+       <a href="{$newAlbum}"> Add album </a>
+       <a href="{$delAlbum}"> Del album </a>
+    {/param}
+{/call}
+{/template}
+
+{template galleryAddPic}
+{call fullPage data="all"}
+    {param title: 'Add new picture'/}
+    {param content}
+      <script language="javascript" type="text/javascript" src="static/js/preview-updater.js">
+      </script>
+      <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+      </link>
+      {$addPicForm |noAutoescape}
+      <form method="get" action="{$action}">
+        Title: <input type="text" name="title" value=""/>
+        Comment: <input type="text" name="comment" value=""/>
+        Album: <input type="text" name="album" value="{$album}" readonly="readonly"/>
+        <input type="hidden" name="pic" value="no-value" id="pic"/>
+        <input type="submit" value="like it!"/>
+      </form>
+      <div id="preview"></div>
+    {/param}
+{/call}
+{/template}
+
+{template galleryAddAlbum}
+{call fullPage data="all"}
+    {param title: 'Add new album'/}
+    {param content}
+      <script language="javascript" type="text/javascript" src="static/js/preview-updater.js">
+      </script>
+      <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+      </link>
+      {print $addPicForm |noAutoescape}
+      <form method="get" action="{$action}">
+        Title: <input type="text" name="title" value=""/>
+        Comment: <input type="text" name="comment" value=""/>
+        <input type="hidden" name="pic" value="no-value" id="pic"/>
+        <input type="submit" value="that is right!"/>
+      </form>
+      <div id="preview"> </div>
+    {/param}
+{/call}
+{/template}
+
+{template galleryViewAlbum}
+{call fullPage data="all"}
+    {param title: '{$albumTitle}'/}
+    {param content}
+      <link rel="stylesheet" type="text/css" media="screen" href="/gal/static/css/gallery.css">
+      </link>
+      <h1> {$albumTitle} </h1>
+      <p> {$albumComment} </p>
+      <a href="{$addPicUrl}"> new picture </a>
+      <a href="{$remPicUrl}"> del picture </a>
+      {foreach $pic in $pictures}
+         {$pic |noAutoescape}
+      {/foreach}
+    {/param}
+{/call}
+{/template}
+

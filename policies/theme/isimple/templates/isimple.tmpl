@@ -52,10 +52,10 @@
 {/template}
 
 {template staticLinks}
-    <style type="text/css" media="screen">@import url("/static/isimple/css/style.css");</style>
-    <link rel="stylesheet" href="/static/isimple/css/zh_CN.css" type="text/css" media="screen"/>
-    <link rel="stylesheet" href="/static/isimple/css/colorize.css" type="text/css" media="screen"/>
-    <script type="text/javascript" src="/static/isimple/js/util.js"></script>
+    <style type="text/css" media="screen">@import url("{$static}/css/style.css");</style>
+    <link rel="stylesheet" href="{$static}/css/zh_CN.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="{$static}/css/colorize.css" type="text/css" media="screen"/>
+    <script type="text/javascript" src="{$static}/js/util.js"></script>
 {/template}
 
 
@@ -114,7 +114,7 @@
         <div id="northsidebar" class="sidebar">
             <div class="widget feeds_weight">
                 <div class="content">
-                    <a title="Subscribe to this blog..." class="feedrss" href="/feeds/atom">Subscribe to this blog</a>
+                    <a title="Subscribe to this blog..." class="feedrss" href="{$rssUrl}">Subscribe to this blog</a>
                     <br/>
                     
                     {if $atomFeedHref}

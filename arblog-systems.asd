@@ -23,6 +23,11 @@
 
 ;;;; themes
 
+(defsystem #:arblog-theme-common
+    :depends-on (#:arblog)
+    :pathname "policies/theme/"
+    :components ((:file "common")))
+
 (defsystem #:arblog-theme-mirev
   :defsystem-depends-on (#:closure-template)
   :depends-on (#:arblog)
@@ -39,9 +44,20 @@
 
 (defsystem #:arblog-theme-isimple
   :defsystem-depends-on (#:closure-template)
-  :depends-on (#:arblog)
+  :depends-on (#:arblog #:arblog-theme-common)
   :pathname "policies/theme/isimple/"
   :serial t
   :components ((:module "templates"
                         :components ((:closure-template "isimple")))
                (:file "isimple")))
+
+
+(defsystem #:arblog-theme-just-dance
+  :defsystem-depends-on (#:closure-template)
+  :depends-on (#:arblog #:arblog-theme-common)
+  :pathname "policies/theme/just-dance"
+  :serial t
+  :components ((:module "templates"
+                        :components ((:closure-template "all")))
+               (:file "just-dance")))
+
