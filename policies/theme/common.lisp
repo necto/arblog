@@ -60,6 +60,14 @@
                              :month (format nil "~2,'0D" month)
                              :day (format nil "~2,'0D" day))))
 
+(defun render-published (published)
+  (format nil
+          "~A.~A.~A"
+         (local-time:timestamp-day published)
+         (local-time:timestamp-month published)
+         (local-time:timestamp-year published)))
+
+
 (defun prepare-post-data (post)
   (let* ((published (gethash "published" post))
          (year (local-time:timestamp-year published))
@@ -81,7 +89,7 @@
                                 :href (restas:genurl 'arblog.public::posts-with-tag :tag tag))))
           :edit (when (admin-session)
                   (restas:genurl 'arblog::-admin-.edit-post :id (gethash "_id" post)))
-          :published (local-time:format-rfc1123-timestring nil published))))
+          :published (render-published published))))
 
 (defmacro define-theme-method (theme static-dir method (&rest args) &body body)
   (alexandria:with-unique-names (tmplname tmplargs inst)

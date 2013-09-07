@@ -104,7 +104,7 @@
       (setf (gethash "published" post)
             published))
     (when updated
-      (setf (gethash "published" post)
+      (setf (gethash "updated" post)
             updated))
     (with-posts-collection (posts datastore)
       (mongo:insert-op posts post))

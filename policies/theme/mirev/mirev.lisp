@@ -8,6 +8,11 @@
 
 (in-package #:arblog.theme.mirev)
 
+(defconstant +month-names+
+  #("Нуллября" "Янавря" "Февраля" "Марта" "Апреля" "Мая"
+    "Июня" "Июля" "Августа" "Сентября" "Октября" "Ноября" "Декабря"))
+; local-time:+month-names+)
+
 (defclass arblog-mirev-theme (gallery.default-render::handler)
   ((templates-package :initarg :templates-package
                       :initform '#:arblog.theme.mirev.tmpl
@@ -38,7 +43,7 @@
                              :year year)))
 
 (defun archive-for-month-link (year month)
-  (list :title (svref local-time:+month-names+ month)
+  (list :title (svref +month-names+ month)
         :href (restas:genurl 'arblog.public::archive-for-month
                              :year year
                              :month (format nil "~2,'0D" month))))
@@ -91,13 +96,13 @@
   (render-template archive-for-month
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month))))
+          :month (svref +month-names+ month))))
 
 (define-mirev-method theme-archive-for-day (year month day posts)
   (render-template archive-for-day
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month)
+          :month (svref +month-names+ month)
           :day day)))
 
 (define-mirev-method theme-one-post (post)

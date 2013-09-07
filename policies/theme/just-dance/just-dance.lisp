@@ -78,15 +78,9 @@
 
 ;;;; Admin
 
-(defun render-published (published)
-  (format nil
-          "~A.~A.~A"
-         (local-time:timestamp-year published)
-         (local-time:timestamp-month published)
-         (local-time:timestamp-day published)))
-
-;(define-jd-method theme-admin-posts (posts navigation)
-;  (render-template admin-post-page
+(define-jd-method theme-admin-posts (posts navigation)
+  (render.list-recent-posts posts navigation))
+;  (render-template all-posts
 ;    (list :posts (iter (for post in posts)
 ;                       (collect (list :id (gethash "_id" post)
 ;                                      :title (gethash "title" post)
