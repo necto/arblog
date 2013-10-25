@@ -9,6 +9,8 @@
 ;; (asdf:operate 'asdf:load-op '#:arblog-markup-markdown)
 
 (asdf:operate 'asdf:load-op '#:arblog-theme-mirev)
+;(asdf:operate 'asdf:load-op '#:arblog-theme-isimple)
+;(asdf:operate 'asdf:load-op '#:arblog-theme-just-dance)
 
 (restas:define-module #:myblog
   (:use #:cl))
@@ -21,8 +23,10 @@
   
   (arblog.internal.datastore:*datastore* (make-instance 'arblog.datastore.mongodb:arblog-mongo-datastore))
   (arblog.internal.markup:*markup* (make-instance 'arblog.markup.rst:arblog-rst-markup))
-  ;;(arblog.policy.markup:*markup* (make-instance 'arblog.markup.markdown:arblog-markdown-markup))
+  ;(arblog.policy.markup:*markup* (make-instance 'arblog.markup.markdown:arblog-markdown-markup))
   (arblog.internal.theme:*theme* (make-instance 'arblog.theme.mirev:arblog-mirev-theme))
+;  (arblog.internal.theme:*theme* (make-instance 'arblog.theme.isimple:arblog-isimple-theme))
+;  (arblog.internal.theme:*theme* (make-instance 'arblog.theme.just-dance:instance))
   
   (arblog:*disqus-enabled* nil))
 
