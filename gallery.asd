@@ -1,1 +1,0 @@
-cl-gallery/gallery.asd
