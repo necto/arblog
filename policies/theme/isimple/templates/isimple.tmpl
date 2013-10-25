@@ -180,14 +180,26 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+{template renderDate}
+<div class="date">
+    <a href="{$day.href}">
+       {$day.title}
+    </a>
+    <a href="{$month.href}">
+       {$month.title}
+    </a>
+    <a href="{$year.href}">
+       {$year.title}
+    </a>
+</div>
+{/template}
 
 {template showBlogPost}    
     <div class="post">
         <h2><a class="title" href="{$href}" rel="bookmark">{$title}</a></h2>
 
         <div class="info">
-            /*<span class="date">{$createdtime}</span>*/
-            <span class="date">{$published}</span>
+            {call renderDate data="$published"/}
 
             <div class="act">
                {if $edit}

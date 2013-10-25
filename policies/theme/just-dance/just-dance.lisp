@@ -2,7 +2,6 @@
 
 (defpackage #:arblog.theme.just-dance
   (:use #:cl #:iter #:arblog.policy.theme
-        #:gallery.policy.render #:gallery.content
         #:arblog.theme.common)
   (:export #:instance))
 
@@ -79,7 +78,7 @@
 ;;;; Admin
 
 (define-jd-method theme-admin-posts (posts navigation)
-  (render.list-recent-posts posts navigation))
+  (arblog.internal.theme:render.list-recent-posts posts navigation))
 ;  (render-template all-posts
 ;    (list :posts (iter (for post in posts)
 ;                       (collect (list :id (gethash "_id" post)
@@ -96,33 +95,4 @@
                       :tags (iter (for tag in tags)
                                   (collect (list :name tag))))
           :preview preview)))
-
-;;;; Gallery
-
-(define-jd-method theme.album-list (add-album-url del-album-url albums)
-  (render-template gallery-albums
-    (list :albums (iter (for album in albums)
-                        (collect (draw-preview album)))
-          :new-album add-album-url
-          :del-album del-album-url)))
-
-(define-jd-method theme.add-pic (form album)
-  (render-template gallery-add-pic
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-pic)
-          :album album)))
-
-(define-jd-method theme.add-album (form)
-  (render-template gallery-add-album
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-album))))
-
-(define-jd-method theme.view-album (add-pic-url rem-pic-url album)
-  (render-template gallery-view-album
-    (list :album-title (item-title album)
-          :album-comment (item-comment album)
-          :add-pic-url add-pic-url
-          :rem-pic-url rem-pic-url
-          :pictures (iter (for pic in (album-items album))
-                          (collect (draw-preview pic))))))
 

@@ -2,9 +2,8 @@
 
 (defpackage #:arblog.theme.mirev
   (:use #:cl #:iter #:arblog.policy.theme
-        #:gallery.policy.render #:gallery.content)
-  (:export #:arblog-mirev-theme
-           #:theme-templates-package))
+        #:arblog.theme.common)
+  (:export #:arblog-mirev-theme))
 
 (in-package #:arblog.theme.mirev)
 
@@ -13,10 +12,8 @@
     "Июня" "Июля" "Августа" "Сентября" "Октября" "Ноября" "Декабря"))
 ; local-time:+month-names+)
 
-(defclass arblog-mirev-theme (gallery.default-render::handler)
-  ((templates-package :initarg :templates-package
-                      :initform '#:arblog.theme.mirev.tmpl
-                      :reader theme-templates-package)))
+(defclass arblog-mirev-theme (theme-with-templates)
+  ((templates-package :initform '#:arblog.theme.mirev.tmpl)))
 
 (arblog:register-theme-static-dir
  "mirev"
@@ -27,57 +24,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro define-mirev-method (method (&rest args) &body body)
-  (alexandria:with-unique-names (tmplname tmplargs theme)
-    `(defmethod ,method ((,theme arblog-mirev-theme)  ,@args)
-       (macrolet ((render-template (,tmplname &body ,tmplargs)
-                    `(closure-template:ttable-call-template
-                      (closure-template:package-ttable (theme-templates-package ,',theme))
-                      (string ',,tmplname)
-                      (list* :blog-name arblog:*blog-name*
-                             ,@,tmplargs))))
-         ,@body))))
-
-(defun archive-for-year-link (year)
-  (list :title year
-        :href (restas:genurl 'arblog.public::archive-for-year
-                             :year year)))
-
-(defun archive-for-month-link (year month)
-  (list :title (svref +month-names+ month)
-        :href (restas:genurl 'arblog.public::archive-for-month
-                             :year year
-                             :month (format nil "~2,'0D" month))))
-
-(defun archive-for-day-link (year month day)
-  (list :title day
-        :href (restas:genurl 'arblog.public::archive-for-day
-                             :year year
-                             :month (format nil "~2,'0D" month)
-                             :day (format nil "~2,'0D" day))))
-
-(defun prepare-post-data (post)
-  (let* ((published (gethash "published" post))
-         (year (local-time:timestamp-year published))
-         (month (local-time:timestamp-month published))
-         (day (local-time:timestamp-day published)))
-    (list :id (gethash "_id" post)
-          :title (gethash "title" post)
-          :href (restas:genurl 'arblog.public::one-post
-                               :year year
-                               :month (format nil "~2,'0D" month)
-                               :day (format nil "~2,'0D" day)
-                               :urlname (gethash "urlname" post))
-          :content (gethash "content" post)
-          :markup (gethash "markup" post)
-          :all-tags-href (restas:genurl 'arblog.public::all-tags)
-          :tags (iter (for tag in (gethash "tags" post))
-                      (collect
-                          (list :name tag
-                                :href (restas:genurl 'arblog.public::posts-with-tag :tag tag))))
-          :published (list :year (archive-for-year-link year)
-                           :month (archive-for-month-link year month)
-                           :day (archive-for-day-link year month day)))))
-
+  `(define-theme-method arblog-mirev-theme "/static/mirev"
+       ,method ,args ,@body))
 
 (define-mirev-method theme-list-recent-posts (posts navigation)
   (render-template show-all-blog-post
@@ -159,34 +107,3 @@
                       :tags (iter (for tag in tags)
                                   (collect (list :name tag))))
           :preview preview)))
-
-;;;; Gallery
-
-(define-mirev-method theme.album-list (add-album-url rem-album-url albums)
-  (render-template gallery-albums
-    (list :albums (iter (for album in albums)
-                        (collect (draw-preview album)))
-          :del-album rem-album-url
-          :new-album add-album-url)))
-
-(define-mirev-method theme.add-pic (form album)
-  (render-template gallery-add-pic
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-pic)
-          :album album)))
-
-(define-mirev-method theme.add-album (form)
-  (render-template gallery-add-album
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-album))))
-
-(define-mirev-method theme.view-album (add-pic-url rem-pic-url album)
-  (render-template gallery-view-album
-    (list :album-title (item-title album)
-          :album-comment (item-comment album)
-          :add-pic-url add-pic-url
-          :rem-pic-url rem-pic-url
-          :pictures (iter (for pic in (album-items album))
-                          (collect (draw-preview pic))))))
-
-;;; TODO: Eliminate copy&paste style ^^^

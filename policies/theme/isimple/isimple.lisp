@@ -2,7 +2,6 @@
 
 (defpackage #:arblog.theme.isimple
   (:use #:cl #:iter #:arblog.policy.theme
-        #:gallery.policy.render #:gallery.content
         #:arblog.theme.common)
   (:export #:arblog-isimple-theme))
 
@@ -102,31 +101,3 @@
                                   (collect (list :name tag))))
           :preview preview)))
 
-;;;; Gallery
-
-(define-isimple-method theme.album-list (add-album-url del-album-url albums)
-  (render-template gallery-albums
-    (list :albums (iter (for album in albums)
-                        (collect (draw-preview album)))
-          :new-album add-album-url
-          :del-album del-album-url)))
-
-(define-isimple-method theme.add-pic (form album)
-  (render-template gallery-add-pic
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-pic)
-          :album album)))
-
-(define-isimple-method theme.add-album (form)
-  (render-template gallery-add-album
-    (list :add-pic-form form
-          :action (restas:genurl 'gallery:receive-album))))
-
-(define-isimple-method theme.view-album (add-pic-url rem-pic-url album)
-  (render-template gallery-view-album
-    (list :album-title (item-title album)
-          :album-comment (item-comment album)
-          :add-pic-url add-pic-url
-          :rem-pic-url rem-pic-url
-          :pictures (iter (for pic in (album-items album))
-                          (collect (draw-preview pic))))))

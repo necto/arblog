@@ -69,11 +69,3 @@
 (restas:mount-module -static- (#:arblog.static)
   (:url "/static/"))
 
-(restas:mount-module -gallery- (#:gallery)
-  (:inherit-parent-context t)
-  (:url "gal"))
-
-(defmethod restas:initialize-module-instance :after ((module (eql #.*package*)) context)
-  (restas:with-context context
-    (setf gallery.internal.render:*render* arblog.internal.theme:*theme*)))
-

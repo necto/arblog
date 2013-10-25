@@ -1,7 +1,5 @@
 ;;;; simple.lisp
 
-(asdf:operate 'asdf:load-op '#:gallery)
-
 (asdf:operate 'asdf:load-op '#:arblog)
 (asdf:operate 'asdf:load-op '#:arblog-systems)
 
@@ -10,8 +8,8 @@
 (asdf:operate 'asdf:load-op '#:arblog-markup-rst)
 ;; (asdf:operate 'asdf:load-op '#:arblog-markup-markdown)
 
-;(asdf:operate 'asdf:load-op '#:arblog-theme-isimple)
-;(asdf:operate 'asdf:load-op '#:arblog-theme-mirev)
+(asdf:operate 'asdf:load-op '#:arblog-theme-isimple)
+(asdf:operate 'asdf:load-op '#:arblog-theme-mirev)
 (asdf:operate 'asdf:load-op '#:arblog-theme-just-dance)
 
 (restas:define-module #:myblog

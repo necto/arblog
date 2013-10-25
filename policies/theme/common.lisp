@@ -1,7 +1,6 @@
 
 (defpackage #:arblog.theme.common
-  (:use #:cl #:iter #:arblog.policy.theme
-        #:gallery.policy.render #:gallery.content)
+  (:use #:cl #:iter #:arblog.policy.theme)
   (:export #:theme-with-templates
            #:recent-posts-widget
            #:tags-widget
@@ -17,7 +16,7 @@
 
 (in-package #:arblog.theme.common)
 
-(defclass theme-with-templates (gallery.default-render::handler)
+(defclass theme-with-templates ()
   ((templates-package :initarg :templates-package
                       :reader theme-templates-package)))
 
@@ -46,13 +45,6 @@
                              :year year
                              :month (format nil "~2,'0D" month))))
 
-(defun admin-session ()
-  (hunchentoot:session-value :admin-session))
-
-(defun new-entry-url ()
-  (when (admin-session)
-    (restas:genurl 'arblog::-admin-.create-post)))
-
 (defun archive-for-day-link (year month day)
   (list :title day
         :href (restas:genurl 'arblog.public::archive-for-day
@@ -60,13 +52,21 @@
                              :month (format nil "~2,'0D" month)
                              :day (format nil "~2,'0D" day))))
 
-(defun render-published (published)
-  (format nil
-          "~A.~A.~A"
-         (local-time:timestamp-day published)
-         (local-time:timestamp-month published)
-         (local-time:timestamp-year published)))
 
+(defun admin-session ()
+  (hunchentoot:session-value :admin-session))
+
+(defun new-entry-url ()
+  (when (admin-session)
+    (restas:genurl 'arblog::-admin-.create-post)))
+
+(defun render-published-links (published)
+  (let ((year (local-time:timestamp-year published))
+        (month (local-time:timestamp-month published))
+        (day (local-time:timestamp-day published)))
+    (list :year (archive-for-year-link year)
+          :month (archive-for-month-link year month)
+          :day (archive-for-day-link year month day))))
 
 (defun prepare-post-data (post)
   (let* ((published (gethash "published" post))
@@ -89,7 +89,7 @@
                                 :href (restas:genurl 'arblog.public::posts-with-tag :tag tag))))
           :edit (when (admin-session)
                   (restas:genurl 'arblog::-admin-.edit-post :id (gethash "_id" post)))
-          :published (render-published published))))
+          :published (render-published-links published))))
 
 (defmacro define-theme-method (theme static-dir method (&rest args) &body body)
   (alexandria:with-unique-names (tmplname tmplargs inst)
@@ -106,7 +106,6 @@
                                :static ,,static-dir
                                :login-url (restas:genurl 'arblog::-admin-.entry)
                                :rss-url "/feed/rss"
-                               :gallery-url (restas:genurl 'arblog::-gallery-.main)
                                :blog-name arblog:*blog-name*
                                :blog-author arblog:*blog-author*
                                :recent-posts (if is-not-admin (recent-posts-widget))

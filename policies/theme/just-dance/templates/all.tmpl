@@ -119,11 +119,25 @@
 </div>
 {/template}
 
+{template renderDate}
+<div class="date">
+    <a href="{$day.href}">
+       {$day.title}
+    </a>
+    <a href="{$month.href}">
+       {$month.title}
+    </a>
+    <a href="{$year.href}">
+       {$year.title}
+    </a>
+</div>
+{/template}
+
 
 {template post}
 <div class="post">
    <h1 class="post-title"><a href="{$href}" title="{$title}"> {$title} </a></h1>
-   <div class="postmetadata">Posted in {$published}</div>
+   <div class="postmetadata">Posted in {call renderDate data="$published"/}</div>
    <div class="entry"> {$content| noAutoescape} </div>
    <div class="endline"></div>
    {if $edit}

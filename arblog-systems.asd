@@ -30,7 +30,7 @@
 
 (defsystem #:arblog-theme-mirev
   :defsystem-depends-on (#:closure-template)
-  :depends-on (#:arblog)
+  :depends-on (#:arblog #:arblog-theme-common)
   :pathname "policies/theme/mirev/"
   :serial t
   :components ((:module "templates"
