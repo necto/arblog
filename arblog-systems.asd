@@ -5,14 +5,14 @@
 ;;;; datastores
 
 (defsystem #:arblog-datastore-mongodb
-  :depends-on (#:arblog #:mongo-cl-driver #:ironclad)
+  :depends-on (#:arblog #:mongo-cl-driver.usocket #:ironclad)
   :pathname "policies/datastore/"
   :components ((:file "mongodb")))
 
 ;;;; markups
 
 (defsystem #:arblog-markup-rst
-  :depends-on (#:arblog #:docutils #:colorize)
+  :depends-on (#:arblog #:docutils #:colorize #:cl-libxml2)
   :pathname "policies/markup/"
   :components ((:file "rst")))
 
