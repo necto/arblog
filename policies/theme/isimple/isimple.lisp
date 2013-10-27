@@ -8,7 +8,8 @@
 (in-package #:arblog.theme.isimple)
 
 (defclass arblog-isimple-theme (theme-with-templates)
-  ((templates-package :initform '#:arblog.theme.isimple.tmpl)))
+  ((templates-package :initform '#:arblog.theme.isimple.tmpl)
+   (static-prefix :initform "static/isimple")))
 
 (arblog:register-theme-static-dir
  "isimple"
@@ -16,7 +17,8 @@
 
 
 (defmacro define-isimple-method (method (&rest args) &body body)
-  `(define-theme-method arblog-isimple-theme "/static/isimple" ,method ,args ,@body))
+  (alexandria:with-unique-names (inst)
+  `(define-theme-method (,inst arblog-isimple-theme) ,method ,args ,@body)))
 
 (define-isimple-method theme-list-recent-posts (posts navigation)
   (render-template show-all-blog-post
@@ -36,13 +38,13 @@
   (render-template archive-for-month
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month))))
+          :month (month-name month))))
 
 (define-isimple-method theme-archive-for-day (year month day posts)
   (render-template archive-for-day
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month)
+          :month (month-name month)
           :day day)))
 
 (define-isimple-method theme-one-post (post)

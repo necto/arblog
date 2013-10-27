@@ -8,14 +8,16 @@
 (in-package #:arblog.theme.just-dance)
 
 (defclass instance (theme-with-templates)
-  ((templates-package :initform '#:arblog.theme.just-dance.tmpl)))
+  ((templates-package :initform '#:arblog.theme.just-dance.tmpl)
+   (static-prefix :initform "static/just-dance")))
 
 (arblog:register-theme-static-dir
  "just-dance"
  (merge-pathnames "static/" (asdf:component-pathname  (asdf:find-system '#:arblog-theme-just-dance))))
 
 (defmacro define-jd-method (method (&rest args) &body body)
-  `(define-theme-method instance "/static/just-dance" ,method ,args ,@body))
+  (alexandria:with-unique-names (inst)
+    `(define-theme-method (,inst instance) ,method ,args ,@body)))
 
 (define-jd-method theme-list-recent-posts (posts navigation)
   (render-template all-posts
@@ -36,13 +38,13 @@
   (render-template archive-for-month
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month))))
+          :month (month-name month))))
 
 (define-jd-method theme-archive-for-day (year month day posts)
   (render-template archive-for-day
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref local-time:+month-names+ month)
+          :month (month-name month)
           :day day)))
 
 

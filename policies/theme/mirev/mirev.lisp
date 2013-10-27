@@ -7,13 +7,9 @@
 
 (in-package #:arblog.theme.mirev)
 
-(defconstant +month-names+
-  #("Нуллября" "Янавря" "Февраля" "Марта" "Апреля" "Мая"
-    "Июня" "Июля" "Августа" "Сентября" "Октября" "Ноября" "Декабря"))
-; local-time:+month-names+)
-
 (defclass arblog-mirev-theme (theme-with-templates)
-  ((templates-package :initform '#:arblog.theme.mirev.tmpl)))
+  ((templates-package :initform '#:arblog.theme.mirev.tmpl)
+   (static-prefix :initform "static/mirev")))
 
 (arblog:register-theme-static-dir
  "mirev"
@@ -24,8 +20,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro define-mirev-method (method (&rest args) &body body)
-  `(define-theme-method arblog-mirev-theme "/static/mirev"
-       ,method ,args ,@body))
+  (alexandria:with-unique-names (inst)
+    `(define-theme-method (,inst arblog-mirev-theme) ,method ,args ,@body)))
 
 (define-mirev-method theme-list-recent-posts (posts navigation)
   (render-template show-all-blog-post
@@ -44,13 +40,13 @@
   (render-template archive-for-month
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref +month-names+ month))))
+          :month (month-name month))))
 
 (define-mirev-method theme-archive-for-day (year month day posts)
   (render-template archive-for-day
     (list :posts (mapcar 'prepare-post-data posts)
           :year year
-          :month (svref +month-names+ month)
+          :month (month-name month)
           :day day)))
 
 (define-mirev-method theme-one-post (post)

@@ -15,14 +15,7 @@
 ;; main admin page
 
 (restas:define-route entry ("/")
-  (:apply-render-method 'render.admin-posts)
-  (:additional-variables (skip (parse-skip-param) 0))
-  (let ((*posts-on-page* 25))
-    (list (ds.list-recent-posts skip *posts-on-page*
-                                :fields '("title" "published"))
-          (navigation (restas:genurl 'entry)
-                      skip
-                      (ds.count-posts)))))
+  (restas:redirect 'arblog::-public-.entry))
 
 ;; create post
 

@@ -38,8 +38,7 @@
                                      (:closure-template "entries")
                                      (:closure-template "tags")
                                      (:closure-template "archive")
-                                     (:closure-template "admin")
-                                     (:closure-template "gallery")))
+                                     (:closure-template "admin")))
                (:file "mirev")))
 
 (defsystem #:arblog-theme-isimple
