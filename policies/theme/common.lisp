@@ -12,6 +12,7 @@
            #:prepare-post-data
            #:render-template
            #:static-prefix
+           #:st-prefix-relative
            #:*date-render*
            #:*extra-render-params*
            #:*month-names*
@@ -29,7 +30,10 @@
   ((templates-package :initarg :templates-package
                       :reader theme-templates-package)
    (static-prefix :initarg :static
-                  :reader static-prefix)))
+                  :reader static-prefix)
+   (st-prefix-relative :initarg :st-prefix-relative
+                       :initform 'arblog::-public-.entry
+                       :reader st-prefix-relative)))
 
 (defun recent-posts-widget ()
   (iter (for item in (arblog.internal.datastore:ds.list-recent-posts 0 10 :fields '("title")))
@@ -107,6 +111,13 @@
                   (restas:genurl 'arblog::-admin-.edit-post :id (gethash "_id" post)))
           :published (funcall *date-render* published))))
 
+(defun get-static-url (inst)
+  (if (st-prefix-relative inst)
+      (concatenate 'string
+                   (restas:genurl (st-prefix-relative inst))
+                   (static-prefix inst))
+      (static-prefix inst)))                   
+
 (defmacro define-theme-method ((inst theme) method (&rest args) &body body)
   (alexandria:with-unique-names (tmplname tmplargs)
     `(defmethod ,method ((,inst ,theme) ,@args)
@@ -119,9 +130,7 @@
                         (list* :index-url (restas:genurl (if is-not-admin
                                                              'arblog::-public-.entry
                                                              'arblog::-admin-.entry))
-                               :static (concatenate 'string
-                                                    (restas:genurl 'arblog::-public-.entry)
-                                                    (static-prefix ,',inst))
+                               :static (get-static-url ,',inst)
                                :extra arblog.theme.common:*extra-render-params*
                                :login-url (restas:genurl 'arblog::-admin-.entry)
                                :rss-url "/feed/rss"
